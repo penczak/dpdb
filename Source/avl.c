@@ -35,7 +35,9 @@ int main() {
         printf("Enter command:\n");
         scanf(" %c", &chr);
 
-        if (chr == 'i') {
+        switch (chr)
+        {
+        case ('i'): {
             char insert_key[16];
             printf("Enter key:\n");
             scanf(" %s", &insert_key);
@@ -45,19 +47,24 @@ int main() {
             scanf(" %s", &insert_value);
 
             insert(&root, insert_key, insert_value);
+            break;
         }
-        else if (chr == 'g') {
+        case ('g'): {
             char key[16];
             printf("Enter key:\n");
             scanf(" %s", &key);
 
             get_value(root, key);
+            break;
         }
-        else if (chr == 'p') {
+        case ('p'):
             print_tree(root, 0);
-        }
-        else if (chr == 'j') {
+            break;
+        case ('j'):
             print_tree_json(root, 0);
+            break;
+        default:
+            break;
         }
     }
 }
