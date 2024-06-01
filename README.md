@@ -1,4 +1,4 @@
-# dpdb
+# dpdb (daniel penczak database)
 
 Learning C and about database implementation. 
 
