@@ -11,6 +11,7 @@ struct node {
 };
 
 void insert(struct node** rp, char key[16], char value[128]);
+char* get_value(struct node* n, char key[16]);
 void print_tree(struct node* n, int depth);
 void print_tree_json(struct node* n, int depth);
 int height(struct node* n);
@@ -28,11 +29,11 @@ int main() {
         char chr;
         printf("\n\n");
         printf("i - insert\n");
+        printf("g - get\n");
         printf("p - print tree\n");
         printf("j - print tree json\n");
         printf("Enter command:\n");
         scanf(" %c", &chr);
-        printf("\nYou entered: %c\n\n", chr);
 
         if (chr == 'i') {
             char insert_key[16];
@@ -44,6 +45,13 @@ int main() {
             scanf(" %s", &insert_value);
 
             insert(&root, insert_key, insert_value);
+        }
+        else if (chr == 'g') {
+            char key[16];
+            printf("Enter key:\n");
+            scanf(" %s", &key);
+
+            get_value(root, key);
         }
         else if (chr == 'p') {
             print_tree(root, 0);
@@ -68,7 +76,7 @@ void insert(struct node** rp, char key[16], char value[128]) {
         }
         new_node->left = NULL;
         new_node->right = NULL;
-        new_node->height = 0;
+        new_node->height = 1;
         strcpy(new_node->key, key);
         strcpy(new_node->value, value);
         // update root pointer to the new node
@@ -94,6 +102,24 @@ void insert(struct node** rp, char key[16], char value[128]) {
     *rp = balance(current);
 }
 
+char* get_value(struct node* n, char key[16]) {
+    if (n == NULL) {
+        printf("key not found!\n");
+        return "";
+    }
+    int strcmp_val = strcmp(key, n->key);
+    if (strcmp_val < 0) {
+        get_value(n->left, key);
+    }
+    else if (strcmp_val > 0) {
+        get_value(n->right, key);
+    }
+    else { // (strcmp_val == 0)
+        printf("value: %s", n->value);
+        return n->value;
+    }
+}
+
 void print_tree(struct node* n, int depth) {
     if (n == NULL) {
         return;
@@ -106,12 +132,8 @@ void print_tree(struct node* n, int depth) {
 void print_tree_json(struct node* n, int depth) {
     /*{
         value: x
-        left : {
-
-        }
-        right: {
-
-        }
+        left : { }
+        right: { }
     }*/
     if (n == NULL) {
         printf("{}");
@@ -121,26 +143,31 @@ void print_tree_json(struct node* n, int depth) {
     int i;
     for (i = 0; i < depth + 1; i++)
     {
-        printf("\t");
+        printf("  ");
+    }
+    printf("key: %s\n", n->key);
+    for (i = 0; i < depth + 1; i++)
+    {
+        printf("  ");
     }
     printf("value: %s\n", n->value);
     for (i = 0; i < depth + 1; i++)
     {
-        printf("\t");
+        printf("  ");
     }
     printf("left: ");
     print_tree_json(n->left, depth + 1);
     printf("\n");
     for (i = 0; i < depth + 1; i++)
     {
-        printf("\t");
+        printf("  ");
     }
     printf("right: ");
     print_tree_json(n->right, depth + 1);
     printf("\n");
     for (i = 0; i < depth; i++)
     {
-        printf("\t");
+        printf("  ");
     }
     printf("}");
 }
