@@ -6,7 +6,7 @@
 
 struct column {
     char name[NAME_SIZE];
-    char type[NAME_SIZE]; // For simplicity, storing type as string
+    int type; // For simplicity, 0->int, 1->string
     int data_size;
     int index; // in table columns (not needed??)
 };
@@ -28,28 +28,13 @@ struct database {
     struct table* tables; // dynamically allocated array
 };
 
-void create_table(struct database* db);
+void init_table(struct table* t, const char* name, int column_count) {
 
-int main() {
-    struct database* db = (struct database*)malloc(sizeof(struct database));
-    if (db == NULL) {
-        perror("malloc");
-        return EXIT_FAILURE;
-    }
-
-    create_table(db);
-
-    return 0;
-}
-struct table create_table(const char* name, int column_count) {
-    struct table t;
-
-    strcpy(t.name, name);
-    t.column_count = column_count;
-    t.columns = (struct column*)malloc(column_count * sizeof(struct column));
-    t.row_count = 0;
-    t.rows = NULL; // Initially no rows
-    return t;
+    strcpy(t->name, name);
+    t->column_count = column_count;
+    t->columns = (struct column*)malloc(column_count * sizeof(struct column));
+    t->row_count = 0;
+    t->rows = NULL; // Initially no rows
 }
 
 // Function to add a new row to a table
@@ -63,38 +48,63 @@ void add_row(struct table* t, char** values) {
 }
 
 // Function to create a new database
-struct database create_database(int table_count) {
-    struct database db;
-    db.table_count = table_count;
-    db.tables = (struct table*)malloc(table_count * sizeof(struct table));
-    return db;
+void init_database(struct database* db, int table_count) {
+    db->table_count = table_count;
+    db->tables = (struct table*)malloc(table_count * sizeof(struct table));
 }
 
-struct table create_table(const char* name, int column_count) {
-    char table_name[NAME_SIZE];
-    printf("Enter table name:\n");
-    scanf(" %s", &table_name);
-
-    int column_count;
-    printf("Enter column count:\n");
-    scanf(" %d", &column_count);
-
-    printf("sizeof(struct table): %d", sizeof(struct table));
-    printf("sizeof(struct column): %d", sizeof(struct column));
-    printf("column_count * sizeof(struct column): %d", column_count * sizeof(struct column));
-
-    struct table table_update = db->tables[table_count];
-    strcpy(table_update.name, table_name);
-    table_update.index = 0;
-
-    printf("table count before: %d", db->table_count);
-    printf("db->tables[table_count]->name: %s", db->tables[db->table_count].name);
-    db->table_count++;
-    printf("table count after: %d", db->table_count);
-
-    int i;
-    for (i = 0; i < column_count; i++)
+void free_table(struct table* t) {
+    for (int i = 0; i < t->row_count; i++)
     {
-
+        for (int j = 0; j < t->column_count; j++)
+        {
+            free(t->rows[i].values[j]);
+        }
+        free(t->rows[i].values);
     }
+    free(t->rows);
+    free(t->columns);
+}
+
+void test() {
+    struct database db;
+    init_database(&db, 2); // Initialize a database with space for 2 tables
+
+    init_table(&db.tables[0], "Table1", 3); // Initialize first table with 3 columns
+
+    // Set column names for the first table
+    strcpy(db.tables[0].columns[0].name, "ID");
+    db.tables[0].columns[0].type = 0;
+    strcpy(db.tables[0].columns[1].name, "Name");
+    db.tables[0].columns[1].type = 1;
+    strcpy(db.tables[0].columns[2].name, "Age");
+    db.tables[0].columns[2].type = 0;
+
+    // Add a row to the first table
+    char* row1_values[] = { "1", "Alice", "30" };
+    add_row(&db.tables[0], row1_values);
+
+    // Print the first row of the first table
+    printf("First row: ID = %s, Name = %s, Age = %s\n",
+        db.tables[0].rows[0].values[0],
+        db.tables[0].rows[0].values[1],
+        db.tables[0].rows[0].values[2]);
+
+    // Free allocated memory
+    free_table(&db.tables[0]);
+    free(db.tables);
+}
+
+
+int main() {
+    /*struct database* db = (struct database*)malloc(sizeof(struct database));
+    if (db == NULL) {
+        perror("malloc");
+        return EXIT_FAILURE;
+    }
+
+    create_table(db);
+
+    return 0;*/
+    test();
 }
