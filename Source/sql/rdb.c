@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "BPLUS.H"
 
 #define NAME_SIZE 64
 
@@ -90,6 +91,9 @@ void add_row_internal(table* t, char** values) {
 void add_row(table* t, char** values) {
 	for (int i = 0; i < t->column_count; i++)
 	{
+		printf("%d", i);
+		printf("%d", t->columns[i].type);
+		printf("%d", values[i]);
 		switch (t->columns[i].type)
 		{
 		case 0:
@@ -102,6 +106,7 @@ void add_row(table* t, char** values) {
 		default:
 			break;
 		}
+		printf("%d", i);
 	}
 
 	add_row_internal(t, values);
@@ -166,12 +171,15 @@ int main() {
 	strcpy(db.tables[0].columns[0].name, "ID");
 	db.tables[0].columns[0].type = 0;
 
+	printf("x:\n");
 	while (true) {
 
 		char *input = malloc(sizeof(char) * 100);
 		printf("Enter value:\n");
 		scanf(" %s", &input);
-		add_row(&db.tables[0], &input);
+		char** ar = malloc(sizeof(char*));
+		ar[0] = input;
+		add_row(&db.tables[0], ar);
 
 		for (int i = 0; i < db.tables[0].row_count; i++)
 		{
