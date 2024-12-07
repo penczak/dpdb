@@ -1,6 +1,6 @@
 # dpdb (daniel penczak database)
 
-Learning about C and database implementation. 
+Implementing an RDB in C to learn about SQL data structures and internals. 
 
 # Build:
 repos\dpdb> gcc Source/sql/rdb.c -o dpdb.exe
